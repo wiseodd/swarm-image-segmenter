@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/adi/Projects/swarm-image-segmenter/main.cpp
+pso_cluster.h
+/home/adi/Projects/swarm-image-segmenter/pso_cluster.h
+opencv2/opencv.hpp
+-
+
+/home/adi/Projects/swarm-image-segmenter/pso_cluster.cpp
+pso_cluster.h
+/home/adi/Projects/swarm-image-segmenter/pso_cluster.h
+
+/home/adi/Projects/swarm-image-segmenter/pso_cluster.h
+iostream
+-
+string
+-
+cstdlib
+-
+ctime
+-
+vector
+-
+cmath
+-
+fstream
+-
+cstring
+-
+
