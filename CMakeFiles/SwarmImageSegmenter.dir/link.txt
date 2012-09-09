@@ -1,1 +1,0 @@
-/usr/bin/c++       CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o CMakeFiles/SwarmImageSegmenter.dir/src/main.o  -o SwarmImageSegmenter -rdynamic -lopencv_gpu -lopencv_contrib -lopencv_legacy -lopencv_objdetect -lopencv_calib3d -lopencv_features2d -lopencv_video -lopencv_highgui -lopencv_ml -lopencv_imgproc -lopencv_flann -lopencv_core 

@@ -1,1 +1,0 @@
-/home/adi/Projects/swarm-image-segmenter/CMakeFiles/SwarmImageSegmenter.dir
