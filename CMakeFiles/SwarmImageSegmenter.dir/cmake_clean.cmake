@@ -1,6 +1,6 @@
 FILE(REMOVE_RECURSE
-  "CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o"
-  "CMakeFiles/SwarmImageSegmenter.dir/main.o"
+  "CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o"
+  "CMakeFiles/SwarmImageSegmenter.dir/src/main.o"
   "SwarmImageSegmenter.pdb"
   "SwarmImageSegmenter"
 )

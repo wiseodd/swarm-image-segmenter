@@ -109,34 +109,34 @@ SwarmImageSegmenter/fast:
 .PHONY : SwarmImageSegmenter/fast
 
 # target to build an object file
-main.o:
-	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/main.o
-.PHONY : main.o
+src/main.o:
+	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/src/main.o
+.PHONY : src/main.o
 
 # target to preprocess a source file
-main.i:
-	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/main.i
-.PHONY : main.i
+src/main.i:
+	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/src/main.i
+.PHONY : src/main.i
 
 # target to generate assembly for a file
-main.s:
-	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/main.s
-.PHONY : main.s
+src/main.s:
+	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/src/main.s
+.PHONY : src/main.s
 
 # target to build an object file
-pso_cluster.o:
-	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o
-.PHONY : pso_cluster.o
+src/pso_cluster.o:
+	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o
+.PHONY : src/pso_cluster.o
 
 # target to preprocess a source file
-pso_cluster.i:
-	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.i
-.PHONY : pso_cluster.i
+src/pso_cluster.i:
+	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.i
+.PHONY : src/pso_cluster.i
 
 # target to generate assembly for a file
-pso_cluster.s:
-	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.s
-.PHONY : pso_cluster.s
+src/pso_cluster.s:
+	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.s
+.PHONY : src/pso_cluster.s
 
 # Help Target
 help:
@@ -147,12 +147,12 @@ help:
 	@echo "... SwarmImageSegmenter"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
-	@echo "... pso_cluster.o"
-	@echo "... pso_cluster.i"
-	@echo "... pso_cluster.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
+	@echo "... src/pso_cluster.o"
+	@echo "... src/pso_cluster.i"
+	@echo "... src/pso_cluster.s"
 .PHONY : help
 
 

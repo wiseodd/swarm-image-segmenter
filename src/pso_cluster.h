@@ -50,9 +50,12 @@ struct GBest
 float getRandom(float low, float high);
 float getRandomClamped();
 float getDistance(data first, data second);
-float quantizationError(const short* assignMat, const data* datas, const data* centroids, int data_size, int centroid_size);
-void assignDataToCentroid(short* assignMat, const data* datas, const data* centroids, int data_size, int centroid_size);
-void initializePSO(int numOfParticle, int numOfCluster, particle* particles, GBest& gBest, const data* datas);
+float fitness(const short* assignMat, const data* datas, const data* centroids, 
+	int data_size, int centroid_size);
+void assignDataToCentroid(short* assignMat, const data* datas, const data* centroids, 
+	int data_size, int centroid_size);
+void initializePSO(int numOfParticle, int numOfCluster, particle* particles, GBest& gBest, 
+	const data* datas);
 GBest psoClustering(int numOfParticle, int numOfCluster, data* datas, int size);
 
 #endif /* PSO_CLUSTER_H */

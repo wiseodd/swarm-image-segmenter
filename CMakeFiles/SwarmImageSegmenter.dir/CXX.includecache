@@ -6,17 +6,17 @@
 
 #IncludeRegexTransform: 
 
-/home/adi/Projects/swarm-image-segmenter/main.cpp
+/home/adi/Projects/swarm-image-segmenter/src/main.cpp
 pso_cluster.h
-/home/adi/Projects/swarm-image-segmenter/pso_cluster.h
+/home/adi/Projects/swarm-image-segmenter/src/pso_cluster.h
 opencv2/opencv.hpp
 -
 
-/home/adi/Projects/swarm-image-segmenter/pso_cluster.cpp
+/home/adi/Projects/swarm-image-segmenter/src/pso_cluster.cpp
 pso_cluster.h
-/home/adi/Projects/swarm-image-segmenter/pso_cluster.h
+/home/adi/Projects/swarm-image-segmenter/src/pso_cluster.h
 
-/home/adi/Projects/swarm-image-segmenter/pso_cluster.h
+/home/adi/Projects/swarm-image-segmenter/src/pso_cluster.h
 iostream
 -
 string

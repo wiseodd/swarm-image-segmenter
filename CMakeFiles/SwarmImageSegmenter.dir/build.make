@@ -46,62 +46,62 @@ include CMakeFiles/SwarmImageSegmenter.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/SwarmImageSegmenter.dir/flags.make
 
-CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o: CMakeFiles/SwarmImageSegmenter.dir/flags.make
-CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o: pso_cluster.cpp
+CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o: CMakeFiles/SwarmImageSegmenter.dir/flags.make
+CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o: src/pso_cluster.cpp
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/adi/Projects/swarm-image-segmenter/CMakeFiles $(CMAKE_PROGRESS_1)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o -c /home/adi/Projects/swarm-image-segmenter/pso_cluster.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o -c /home/adi/Projects/swarm-image-segmenter/src/pso_cluster.cpp
 
-CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/adi/Projects/swarm-image-segmenter/pso_cluster.cpp > CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.i
+CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/adi/Projects/swarm-image-segmenter/src/pso_cluster.cpp > CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.i
 
-CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/adi/Projects/swarm-image-segmenter/pso_cluster.cpp -o CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.s
+CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/adi/Projects/swarm-image-segmenter/src/pso_cluster.cpp -o CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.s
 
-CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o.requires:
-.PHONY : CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o.requires
+CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o.requires:
+.PHONY : CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o.requires
 
-CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o.provides: CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o.requires
-	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o.provides.build
-.PHONY : CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o.provides
+CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o.provides: CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o.requires
+	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o.provides.build
+.PHONY : CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o.provides
 
-CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o.provides.build: CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o
+CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o.provides.build: CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o
 
-CMakeFiles/SwarmImageSegmenter.dir/main.o: CMakeFiles/SwarmImageSegmenter.dir/flags.make
-CMakeFiles/SwarmImageSegmenter.dir/main.o: main.cpp
+CMakeFiles/SwarmImageSegmenter.dir/src/main.o: CMakeFiles/SwarmImageSegmenter.dir/flags.make
+CMakeFiles/SwarmImageSegmenter.dir/src/main.o: src/main.cpp
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/adi/Projects/swarm-image-segmenter/CMakeFiles $(CMAKE_PROGRESS_2)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/SwarmImageSegmenter.dir/main.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/SwarmImageSegmenter.dir/main.o -c /home/adi/Projects/swarm-image-segmenter/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/SwarmImageSegmenter.dir/src/main.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/SwarmImageSegmenter.dir/src/main.o -c /home/adi/Projects/swarm-image-segmenter/src/main.cpp
 
-CMakeFiles/SwarmImageSegmenter.dir/main.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/SwarmImageSegmenter.dir/main.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/adi/Projects/swarm-image-segmenter/main.cpp > CMakeFiles/SwarmImageSegmenter.dir/main.i
+CMakeFiles/SwarmImageSegmenter.dir/src/main.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/SwarmImageSegmenter.dir/src/main.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/adi/Projects/swarm-image-segmenter/src/main.cpp > CMakeFiles/SwarmImageSegmenter.dir/src/main.i
 
-CMakeFiles/SwarmImageSegmenter.dir/main.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/SwarmImageSegmenter.dir/main.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/adi/Projects/swarm-image-segmenter/main.cpp -o CMakeFiles/SwarmImageSegmenter.dir/main.s
+CMakeFiles/SwarmImageSegmenter.dir/src/main.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/SwarmImageSegmenter.dir/src/main.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/adi/Projects/swarm-image-segmenter/src/main.cpp -o CMakeFiles/SwarmImageSegmenter.dir/src/main.s
 
-CMakeFiles/SwarmImageSegmenter.dir/main.o.requires:
-.PHONY : CMakeFiles/SwarmImageSegmenter.dir/main.o.requires
+CMakeFiles/SwarmImageSegmenter.dir/src/main.o.requires:
+.PHONY : CMakeFiles/SwarmImageSegmenter.dir/src/main.o.requires
 
-CMakeFiles/SwarmImageSegmenter.dir/main.o.provides: CMakeFiles/SwarmImageSegmenter.dir/main.o.requires
-	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/main.o.provides.build
-.PHONY : CMakeFiles/SwarmImageSegmenter.dir/main.o.provides
+CMakeFiles/SwarmImageSegmenter.dir/src/main.o.provides: CMakeFiles/SwarmImageSegmenter.dir/src/main.o.requires
+	$(MAKE) -f CMakeFiles/SwarmImageSegmenter.dir/build.make CMakeFiles/SwarmImageSegmenter.dir/src/main.o.provides.build
+.PHONY : CMakeFiles/SwarmImageSegmenter.dir/src/main.o.provides
 
-CMakeFiles/SwarmImageSegmenter.dir/main.o.provides.build: CMakeFiles/SwarmImageSegmenter.dir/main.o
+CMakeFiles/SwarmImageSegmenter.dir/src/main.o.provides.build: CMakeFiles/SwarmImageSegmenter.dir/src/main.o
 
 # Object files for target SwarmImageSegmenter
 SwarmImageSegmenter_OBJECTS = \
-"CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o" \
-"CMakeFiles/SwarmImageSegmenter.dir/main.o"
+"CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o" \
+"CMakeFiles/SwarmImageSegmenter.dir/src/main.o"
 
 # External object files for target SwarmImageSegmenter
 SwarmImageSegmenter_EXTERNAL_OBJECTS =
 
-SwarmImageSegmenter: CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o
-SwarmImageSegmenter: CMakeFiles/SwarmImageSegmenter.dir/main.o
+SwarmImageSegmenter: CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o
+SwarmImageSegmenter: CMakeFiles/SwarmImageSegmenter.dir/src/main.o
 SwarmImageSegmenter: CMakeFiles/SwarmImageSegmenter.dir/build.make
 SwarmImageSegmenter: CMakeFiles/SwarmImageSegmenter.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX executable SwarmImageSegmenter"
@@ -111,8 +111,8 @@ SwarmImageSegmenter: CMakeFiles/SwarmImageSegmenter.dir/link.txt
 CMakeFiles/SwarmImageSegmenter.dir/build: SwarmImageSegmenter
 .PHONY : CMakeFiles/SwarmImageSegmenter.dir/build
 
-CMakeFiles/SwarmImageSegmenter.dir/requires: CMakeFiles/SwarmImageSegmenter.dir/pso_cluster.o.requires
-CMakeFiles/SwarmImageSegmenter.dir/requires: CMakeFiles/SwarmImageSegmenter.dir/main.o.requires
+CMakeFiles/SwarmImageSegmenter.dir/requires: CMakeFiles/SwarmImageSegmenter.dir/src/pso_cluster.o.requires
+CMakeFiles/SwarmImageSegmenter.dir/requires: CMakeFiles/SwarmImageSegmenter.dir/src/main.o.requires
 .PHONY : CMakeFiles/SwarmImageSegmenter.dir/requires
 
 CMakeFiles/SwarmImageSegmenter.dir/clean:

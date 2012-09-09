@@ -1,16 +1,31 @@
+/*
+ * pso_header.hpp
+ *
+ *  Created on: Jun 7, 2012
+ *      Author: adi
+ */
+
 #include "pso_cluster.h"
 
+/*
+ * Get random between low and high inclusive
+ */
 float getRandom(float low, float high)
 {
 	return low + float(((high - low) + 1) * rand() / ((float) RAND_MAX + 1));
 }
 
-// Get random antara 0.0f dan 1.0f inclusive
+/*
+ * Get random between 0.0f and 1.0f inclusive
+ */
 float getRandomClamped()
 {
 	return (float) rand() / (double) RAND_MAX;
 }
 
+/*
+ * Round real number to its nearest integer
+ */
 int round(float x)
 {
 	if (x > 0.0)
@@ -19,7 +34,9 @@ int round(float x)
 		return (int) ceil(x - 0.5);
 }
 
-// euclidean distance of two datas
+/*
+ * Get euclidean distance between 2 pixels
+ */
 float getDistance(data first, data second)
 {
 	double total = 0.0;
@@ -33,8 +50,11 @@ float getDistance(data first, data second)
 	return sqrt(total);
 }
 
-float quantizationError(const short* assignMat, const data* datas, const data* centroids, int data_size,
-		int cluster_size)
+/*
+ * Get error for given centroids
+ */
+float fitness(const short* assignMat, const data* datas, const data* centroids, 
+	int data_size, int cluster_size)
 {
 	double total = 0.0;
 
@@ -54,7 +74,11 @@ float quantizationError(const short* assignMat, const data* datas, const data* c
 	return total / cluster_size;
 }
 
-void assignDataToCentroid(short* assignMat, const data* datas, const data* centroids, int data_size, int cluster_size)
+/*
+ * Assign pixels to centroids
+ */
+void assignDataToCentroid(short* assignMat, const data* datas, const data* centroids, 
+	int data_size, int cluster_size)
 {
 	for (int i = 0; i < data_size; i++)
 	{
@@ -76,7 +100,11 @@ void assignDataToCentroid(short* assignMat, const data* datas, const data* centr
 	}
 }
 
-void initializePSO(int particle_size, int cluster_size, particle* particles, GBest& gBest, const data* datas, int size)
+/*
+ * Initialize necessary variables for PSO
+ */
+void initializePSO(int particle_size, int cluster_size, particle* particles, GBest& gBest, 
+	const data* datas, int size)
 {
 	for (int i = 0; i < particle_size; i++)
 	{
@@ -117,6 +145,9 @@ void initializePSO(int particle_size, int cluster_size, particle* particles, GBe
 	}
 }
 
+/*
+ * PSO main function
+ */
 GBest psoClustering(int particle_size, int cluster_size, data* datas, int size)
 {
 	// initialize
@@ -143,7 +174,7 @@ GBest psoClustering(int particle_size, int cluster_size, data* datas, int size)
 
 	initializePSO(particle_size, cluster_size, particles, gBest, datas, size);
 
-	// PSO main function
+	// Iteration
 	for (int i = 0; i < MAX_ITER; i++)
 	{
 		cout << "Iteration-" << i + 1 << endl;
@@ -162,8 +193,10 @@ GBest psoClustering(int particle_size, int cluster_size, data* datas, int size)
 				{
 					particles[j].velocity[k].info[l] = round(
 							OMEGA * particles[j].velocity[k].info[l]
-									+ c1 * rp * (particles[j].pBest[k].info[l] - particles[j].position[k].info[l])
-									+ c2 * rg * (gBest.centroids[k].info[l] - particles[j].position[k].info[l]));
+							+ c1 * rp * (particles[j].pBest[k].info[l] 
+								- particles[j].position[k].info[l])
+							+ c2 * rg * (gBest.centroids[k].info[l] 
+								- particles[j].position[k].info[l]));
 
 					particles[j].position[k].info[l] += particles[j].velocity[k].info[l];
 				}
@@ -172,20 +205,18 @@ GBest psoClustering(int particle_size, int cluster_size, data* datas, int size)
 			assignDataToCentroid(assignMatrix[j], datas, particles[j].position, size, cluster_size);
 		}
 
-		cout << "A" << endl;
-
 		for (int j = 0; j < particle_size; j++)
 		{
-			if (quantizationError(assignMatrix[j], datas, particles[j].position, size, cluster_size)
-					< quantizationError(assignMatrix[j], datas, particles[j].pBest, size, cluster_size))
+			if (fitness(assignMatrix[j], datas, particles[j].position, size, cluster_size)
+					< fitness(assignMatrix[j], datas, particles[j].pBest, size, cluster_size))
 			{
 				for (int k = 0; k < cluster_size; k++)
 					particles[j].pBest[k] = particles[j].position[k];
 
 				assignDataToCentroid(pBestAssign[j], datas, particles[j].pBest, size, cluster_size);
 
-				if (quantizationError(pBestAssign[j], datas, particles[j].pBest, size, cluster_size)
-						< quantizationError(gBest.gBestAssign, datas, gBest.centroids, size, cluster_size))
+				if (fitness(pBestAssign[j], datas, particles[j].pBest, size, cluster_size)
+						< fitness(gBest.gBestAssign, datas, gBest.centroids, size, cluster_size))
 				{
 					for (int k = 0; k < cluster_size; k++)
 						gBest.centroids[k] = particles[j].pBest[k];

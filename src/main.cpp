@@ -36,9 +36,6 @@ int main(int argc, char** argv)
 		datas[i] = d;
 	}
 
-	cout << sizeof(data) << endl;
-	cout << sizeof(arrImage) << endl;
-
 	int particle_num, cluster_num;
 
 	cout << "Number of cluster : ";
@@ -50,21 +47,12 @@ int main(int argc, char** argv)
 
 	GBest gBest = psoClustering(particle_num, cluster_num, datas, width * height);
 
-	cout << "QuantError : "
-			<< quantizationError(gBest.gBestAssign, datas, gBest.centroids, width * height,
-					cluster_num) << endl;
+	cout << "QuantError : " 
+		 << fitness(gBest.gBestAssign, datas, gBest.centroids, width * height, cluster_num) << endl;
 
-	unsigned char colorList[9][3] =
-	{
-	{ 0, 0, 255 },
-	{ 255, 0, 0 },
-	{ 0, 255, 0 },
-	{ 255, 255, 0 },
-	{ 255, 0, 255 },
-	{ 255, 128, 128 },
-	{ 128, 128, 128 },
-	{ 128, 0, 0 },
-	{ 255, 128, 0 } };
+	unsigned char colorList[9][3] =	{ { 0, 0, 255 }, { 255, 0, 0 }, { 0, 255, 0 }, 
+									  { 255, 255, 0 }, { 255, 0, 255 }, { 255, 128, 128 }, 
+									  { 128, 128, 128 }, { 128, 0, 0 }, { 255, 128, 0 } };
 
 	for (int i = 0; i < width * height; i++)
 	{
