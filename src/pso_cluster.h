@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <cstdio>
 #include <ctime>
 #include <vector>
 #include <cmath>
@@ -56,7 +57,7 @@ void assignDataToCentroid(short* assignMat, const data* datas, const data* centr
 	int data_size, int cluster_size);
 void initializePSO(particle* particles, GBest& gBest, const data* datas, int data_size, 
 	int particle_size, int cluster_size);
-GBest hostPsoClustering(data* datas, int data_size, int particle_size, int cluster_size);
+GBest hostPsoClustering(data* datas, int data_size, int particle_size, int cluster_size, int max_iter);
 extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size, int particle_size, 
 	int cluster_size, int max_iter);
 #endif /* PSO_CLUSTER_H */

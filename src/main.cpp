@@ -41,19 +41,32 @@ int main(int argc, char** argv)
 		datas[i] = d;
 	}
 
-	int particle_num, cluster_num;
+	int particle_num, cluster_num, max_iter;
 
 	cout << "Number of cluster : ";
 	cin >> cluster_num;
 	cout << "Number of particle : ";
 	cin >> particle_num;
+	cout << "Number of iteration : ";
+	cin >> max_iter;
 
 	cout << endl;
 
-	GBest gBest = hostPsoClustering(datas, width * height, particle_num, cluster_num);
+	clock_t begin = clock();
 
-	cout << "QuantError : " 
-		 << fitness(gBest.gBestAssign, datas, gBest.centroids, width * height, cluster_num) << endl;
+	// GBest gBest = hostPsoClustering(datas, width * height, particle_num, cluster_num, max_iter);
+	GBest gBest = devicePsoClustering(datas, flatDatas, width * height, particle_num, cluster_num, max_iter);
+
+	clock_t end = clock();
+
+	cout << "Time elapsed : " << (double)(end - begin) / CLOCKS_PER_SEC << "s" << endl;
+
+
+	// for(int i = 0; i < width * height; i++)
+	// 	cout << gBest.gBestAssign[i] << endl;
+
+	// cout << "QuantError : " 
+	// 	 << fitness(gBest.gBestAssign, datas, gBest.centroids, width * height, cluster_num) << endl;
 
 	unsigned char colorList[9][3] =	{ { 0, 0, 255 }, { 255, 0, 0 }, { 0, 255, 0 }, 
 									  { 255, 255, 0 }, { 255, 0, 255 }, { 255, 128, 128 }, 
@@ -72,7 +85,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	delete[] gBest.centroids;
+	//delete[] gBest.centroids;
 	delete[] gBest.gBestAssign;
 
 	IplImage* outImage = cvCreateImage(cvSize(width, height), inputImage->depth, channel);

@@ -148,7 +148,7 @@ void initializePSO(particle* particles, GBest& gBest, const data* datas, int dat
 /*
  * PSO main function
  */
-GBest hostPsoClustering(data* datas, int data_size, int particle_size, int cluster_size)
+GBest hostPsoClustering(data* datas, int data_size, int particle_size, int cluster_size, int max_iter)
 {
 	// initialize
 	GBest gBest;
@@ -175,7 +175,7 @@ GBest hostPsoClustering(data* datas, int data_size, int particle_size, int clust
 	initializePSO(particles, gBest, datas, data_size, particle_size, cluster_size);
 
 	// Iteration
-	for (int i = 0; i < MAX_ITER; i++)
+	for (int i = 0; i < max_iter; i++)
 	{
 		cout << "Iteration-" << i + 1 << endl;
 
