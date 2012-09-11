@@ -18,10 +18,11 @@ int main(int argc, char** argv)
 	int height = inputImage->height;
 	int channel = inputImage->nChannels;
 
-	char* arrImage = new char[width * height * channel];
-	int* flatDatas = new int[width * height * channel];
-	data* datas = new data[width * height];
+	char *arrImage = new char[width * height * channel];
+	int *flatDatas = new int[width * height * channel];
+	data *datas = new data[width * height];
 
+	// Load image to array
 	for (int i = 0; i < width * height; i++)
 	{
 		arrImage[i * channel + 0] = (unsigned char) inputImage->imageData[i * channel + 0];
@@ -41,6 +42,7 @@ int main(int argc, char** argv)
 		datas[i] = d;
 	}
 
+	// PSO parameters
 	int particle_num, cluster_num, max_iter;
 	char comp;
 
@@ -64,6 +66,7 @@ int main(int argc, char** argv)
 
 	GBest gBest;
 
+	// Check if use host code or device code
 	if(comp == 'C')
 		gBest = hostPsoClustering(datas, width * height, particle_num, cluster_num, max_iter);
 	else
@@ -73,17 +76,24 @@ int main(int argc, char** argv)
 
 	cout << "Time elapsed : " << (double)(end - begin) / CLOCKS_PER_SEC << "s" << endl;
 
+	// Compute quantization error of clusters, less is better
+	if(comp == 'C')
+	{
+		cout << "Quantization Error : " 
+			 << fitness(gBest.gBestAssign, datas, gBest.centroids, width * height, cluster_num) << endl;
+	}
+	else
+	{
+		cout << "Quantization Error : " 
+			 << devFitness(gBest.gBestAssign, flatDatas, gBest.arrCentroids, width * height, cluster_num) << endl;		
+	}
 
-	// for(int i = 0; i < width * height; i++)
-	// 	cout << gBest.gBestAssign[i] << endl;
-
-	// cout << "QuantError : " 
-	// 	 << fitness(gBest.gBestAssign, datas, gBest.centroids, width * height, cluster_num) << endl;
-
+	// List for cluster color
 	unsigned char colorList[9][3] =	{ { 0, 0, 255 }, { 255, 0, 0 }, { 0, 255, 0 }, 
 									  { 255, 255, 0 }, { 255, 0, 255 }, { 255, 128, 128 }, 
 									  { 128, 128, 128 }, { 128, 0, 0 }, { 255, 128, 0 } };
 
+	// Coloring clusters
 	for (int i = 0; i < width * height; i++)
 	{
 		for (int j = 0; j < cluster_num; j++)
@@ -97,9 +107,14 @@ int main(int argc, char** argv)
 		}
 	}
 
-	//delete[] gBest.centroids;
+	if(comp == 'C')
+		delete[] gBest.centroids;
+	else
+		cudaFreeHost(gBest.arrCentroids);
+
 	delete[] gBest.gBestAssign;
 
+	// Write array to image
 	IplImage* outImage = cvCreateImage(cvSize(width, height), inputImage->depth, channel);
 	outImage->imageData = arrImage;
 
@@ -109,6 +124,7 @@ int main(int argc, char** argv)
 	cvShowImage("Result", outImage);
 	cvWaitKey(0);
 
+	// Cleanup
 	cvReleaseImage(&inputImage);
 	cvReleaseImage(&outImage);
 

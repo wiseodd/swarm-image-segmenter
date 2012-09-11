@@ -53,7 +53,7 @@ float getDistance(data first, data second)
 /*
  * Get error for given centroids
  */
-float fitness(const short* assignMat, const data* datas, const data* centroids, 
+float fitness(const short *assignMat, const data *datas, const data *centroids, 
 	int data_size, int cluster_size)
 {
 	double total = 0.0;
@@ -77,7 +77,7 @@ float fitness(const short* assignMat, const data* datas, const data* centroids,
 /*
  * Assign pixels to centroids
  */
-void assignDataToCentroid(short* assignMat, const data* datas, const data* centroids, 
+void assignDataToCentroid(short *assignMat, const data *datas, const data *centroids, 
 	int data_size, int cluster_size)
 {
 	for (int i = 0; i < data_size; i++)
@@ -103,7 +103,7 @@ void assignDataToCentroid(short* assignMat, const data* datas, const data* centr
 /*
  * Initialize necessary variables for PSO
  */
-void initializePSO(particle* particles, GBest& gBest, const data* datas, int data_size, 
+void initializePSO(particle *particles, GBest& gBest, const data *datas, int data_size, 
 	int particle_size, int cluster_size)
 {
 	for (int i = 0; i < particle_size; i++)
@@ -148,13 +148,13 @@ void initializePSO(particle* particles, GBest& gBest, const data* datas, int dat
 /*
  * PSO main function
  */
-GBest hostPsoClustering(data* datas, int data_size, int particle_size, int cluster_size, int max_iter)
+GBest hostPsoClustering(data *datas, int data_size, int particle_size, int cluster_size, int max_iter)
 {
 	// initialize
 	GBest gBest;
-	particle* particles = new particle[particle_size];
-	short** assignMatrix = new short*[particle_size];
-	short** pBestAssign = new short*[particle_size];
+	particle *particles = new particle[particle_size];
+	short **assignMatrix = new short*[particle_size];
+	short **pBestAssign = new short*[particle_size];
 	gBest.gBestAssign = new short[data_size];
 
 	for (int i = 0; i < particle_size; i++)
