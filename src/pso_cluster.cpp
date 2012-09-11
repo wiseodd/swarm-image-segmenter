@@ -177,8 +177,6 @@ GBest hostPsoClustering(data* datas, int data_size, int particle_size, int clust
 	// Iteration
 	for (int i = 0; i < max_iter; i++)
 	{
-		cout << "Iteration-" << i + 1 << endl;
-
 		float rp = getRandomClamped();
 		float rg = getRandomClamped();
 

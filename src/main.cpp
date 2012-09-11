@@ -42,6 +42,7 @@ int main(int argc, char** argv)
 	}
 
 	int particle_num, cluster_num, max_iter;
+	char comp;
 
 	cout << "Number of cluster : ";
 	cin >> cluster_num;
@@ -50,12 +51,23 @@ int main(int argc, char** argv)
 	cout << "Number of iteration : ";
 	cin >> max_iter;
 
+	do
+	{
+		cout << "CPU or GPU (C / G) ? : ";
+		cin >> comp;
+	}
+	while(comp != 'C' && comp != 'G');
+
 	cout << endl;
 
 	clock_t begin = clock();
 
-	// GBest gBest = hostPsoClustering(datas, width * height, particle_num, cluster_num, max_iter);
-	GBest gBest = devicePsoClustering(datas, flatDatas, width * height, particle_num, cluster_num, max_iter);
+	GBest gBest;
+
+	if(comp == 'C')
+		gBest = hostPsoClustering(datas, width * height, particle_num, cluster_num, max_iter);
+	else
+		gBest = devicePsoClustering(datas, flatDatas, width * height, particle_num, cluster_num, max_iter);
 
 	clock_t end = clock();
 

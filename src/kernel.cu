@@ -146,11 +146,20 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 	// Initialize host memory
 	int *positions = new int[particle_size * cluster_size * DATA_DIM];
 	int *velocities = new int[particle_size * cluster_size * DATA_DIM];
-	int *pBests = new int[particle_size * cluster_size * DATA_DIM];
-	int *gBest = new int[cluster_size * DATA_DIM];
 	short *posAssign = new short[particle_size * data_size];
-	short *pBestAssign = new short[particle_size * data_size];
 	short *gBestAssign = new short[data_size];
+
+	int *pBests, *gBest;
+	short *pBestAssign;
+
+	size_t size = sizeof(int) * particle_size * cluster_size * DATA_DIM;
+	size_t assign_size = sizeof(short) * particle_size * data_size;
+
+	cudaSetDeviceFlags(cudaDeviceMapHost);
+
+	cudaHostAlloc((void**)&pBests, size, cudaHostAllocMapped);
+	cudaHostAlloc((void**)&gBest, sizeof(int) * cluster_size * DATA_DIM, cudaHostAllocMapped);
+	cudaHostAlloc((void**)&pBestAssign, assign_size, cudaHostAllocMapped);
 
 	// Initialize assignment matrix to cluster 0
 	for(int i = 0; i < particle_size * data_size; i++)
@@ -169,25 +178,20 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 	short *devPosAssign, *devPBestAssign;
 	int *devDatas;
 
-	size_t size = sizeof(int) * particle_size * cluster_size * DATA_DIM;
-	size_t assign_size = sizeof(short) * particle_size * data_size;
-
 	cudaMalloc((void**)&devPositions, size);
-	cudaMalloc((void**)&devVelocities, size);
-	cudaMalloc((void**)&devPBests, size);
-	cudaMalloc((void**)&devGBest, sizeof(int) * cluster_size * DATA_DIM);
+	cudaMalloc((void**)&devVelocities, size);	
 	cudaMalloc((void**)&devPosAssign, assign_size);
-	cudaMalloc((void**)&devPBestAssign, assign_size);
 	cudaMalloc((void**)&devDatas, sizeof(int) * data_size * DATA_DIM);
 
 	// Copy data from host to device
 	cudaMemcpy(devPositions, positions, size, cudaMemcpyHostToDevice);
 	cudaMemcpy(devVelocities, velocities, size, cudaMemcpyHostToDevice);
-	cudaMemcpy(devPBests, pBests, size, cudaMemcpyHostToDevice);
-	cudaMemcpy(devGBest, gBest, sizeof(int) * cluster_size * DATA_DIM, cudaMemcpyHostToDevice);
 	cudaMemcpy(devPosAssign, posAssign, assign_size, cudaMemcpyHostToDevice);
-	cudaMemcpy(devPBestAssign, pBestAssign, assign_size, cudaMemcpyHostToDevice);
 	cudaMemcpy(devDatas, flatDatas, sizeof(int) * data_size * DATA_DIM, cudaMemcpyHostToDevice);
+
+	cudaHostGetDevicePointer(&devPBests, pBests, 0);
+	cudaHostGetDevicePointer(&devGBest, gBest, 0);
+	cudaHostGetDevicePointer(&devPBestAssign, pBestAssign, 0);
 
 	// Threads and blocks number
 	int threads = 32;
@@ -196,9 +200,7 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 
 	// Iteration
 	for (int iter = 0; iter < max_iter; iter++)
-	{
-		cout << "Iteration-" << iter + 1 << endl;
-		
+	{		
 		float rp = getRandomClamped();
 		float rg = getRandomClamped();
 
@@ -209,9 +211,6 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 			devDatas, data_size, particle_size, cluster_size);
 
 		// Compute gBest on host
-		cudaMemcpy(pBests, devPBests, size, cudaMemcpyDeviceToHost);
-		cudaMemcpy(pBestAssign, devPBestAssign, assign_size, cudaMemcpyDeviceToHost);
-
 		for(int i = 0; i < particle_size; i++)
 		{
 			// Get slice of array
@@ -232,27 +231,21 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 					gBestAssign[k] = pBestAssign[offsetAssign + k];
 			}
 		}
-
-		cudaMemcpy(devGBest, gBest, sizeof(int) * cluster_size * DATA_DIM, cudaMemcpyHostToDevice);
 	}
-
-	// Copy gBest from device to host
-	cudaMemcpy(gBest, devGBest, sizeof(int) * cluster_size * DATA_DIM, cudaMemcpyDeviceToHost);
 
 	// Cleanup
 	delete[] positions;
 	delete[] velocities;
-	delete[] pBests;
 	delete[] posAssign;
-	delete[] pBestAssign;
 
 	cudaFree(devPositions);
 	cudaFree(devVelocities);
-	cudaFree(devPBests);
-	cudaFree(devGBest);
 	cudaFree(devPosAssign);
-	cudaFree(devPBestAssign);
 	cudaFree(devDatas);
+
+	cudaFreeHost(devPBestAssign);
+	cudaFreeHost(devPBests);
+	cudaFreeHost(devGBest);
 
 	GBest gBestReturn;
 	gBestReturn.gBestAssign = gBestAssign;
