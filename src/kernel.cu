@@ -256,6 +256,7 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 
 	GBest gBestReturn;
 	gBestReturn.gBestAssign = gBestAssign;
+	gBestReturn.arrCentroids = gBest;
 
 	return gBestReturn;
 }
