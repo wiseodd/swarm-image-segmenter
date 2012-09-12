@@ -62,19 +62,38 @@ int main(int argc, char** argv)
 
 	cout << endl;
 
-	clock_t begin = clock();
-
 	GBest gBest;
+
+	cudaEvent_t start, stop;
+    float elapsedTime;
+    
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    clock_t begin, end;
 
 	// Check if use host code or device code
 	if(comp == 'C')
+	{
+		begin = clock();
+
 		gBest = hostPsoClustering(datas, width * height, particle_num, cluster_num, max_iter);
+
+		end = clock();
+		cout << "Time elapsed : " << (double)(end - begin) / CLOCKS_PER_SEC << "s" << endl;
+	}
 	else
+	{
+		cudaEventRecord(start, 0);
+
 		gBest = devicePsoClustering(datas, flatDatas, width * height, particle_num, cluster_num, max_iter);
 
-	clock_t end = clock();
+		cudaEventRecord(stop, 0);
+		cudaEventSynchronize(stop);
+		cudaEventElapsedTime(&elapsedTime, start, stop);
 
-	cout << "Time elapsed : " << (double)(end - begin) / CLOCKS_PER_SEC << "s" << endl;
+		cout << "Time elapsed : " << elapsedTime / 1000 << "s" << endl;
+	}	
 
 	// Compute quantization error of clusters, less is better
 	if(comp == 'C')
@@ -107,10 +126,13 @@ int main(int argc, char** argv)
 		}
 	}
 
+	cudaFree(start);
+	cudaFree(stop);
+
 	if(comp == 'C')
 		delete[] gBest.centroids;
 	else
-		cudaFreeHost(gBest.arrCentroids);
+		delete[] gBest.arrCentroids;
 
 	delete[] gBest.gBestAssign;
 
