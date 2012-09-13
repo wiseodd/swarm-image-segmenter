@@ -91,7 +91,7 @@ void initialize(int *positions, int *velocities, int *pBests, int *gBest, const 
 }
 
 /*
- * Kernel to update particle's velocity and position
+ * Kernel to update particle
  */
 __global__ void kernelUpdateParticle(int *positions, int *velocities, int *pBests, int *gBest, 
 	short *posAssign, int* datas, float rp, float rg, int data_size, int particle_size, int cluster_size)
@@ -109,7 +109,7 @@ __global__ void kernelUpdateParticle(int *positions, int *velocities, int *pBest
 }
 
 /*
- * Kernel to update pBests
+ * Kernel to update particle
  */
 __global__ void kernelUpdatePBest(int *positions, int *pBests, short *posAssign, short *pBestAssign, 
 	int* datas, int data_size, int particle_size, int cluster_size)
@@ -147,21 +147,18 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 	int *positions = new int[particle_size * cluster_size * DATA_DIM];
 	int *velocities = new int[particle_size * cluster_size * DATA_DIM];
 	short *posAssign = new short[particle_size * data_size];
-	short *gBestAssign = new short[data_size];
-
-	int *pBests, *gBest;
-	short *pBestAssign;
+	short *gBestAssign = new short[data_size];	
 
 	size_t size = sizeof(int) * particle_size * cluster_size * DATA_DIM;
 	size_t assign_size = sizeof(short) * particle_size * data_size;
+		
+	int *pBests;
+	int *gBest;
+	short *pBestAssign;
 
-	// Use zero copy memory
-	cudaSetDeviceFlags(cudaDeviceMapHost);
-
-	// Allocate zero copy memory
-	cudaHostAlloc((void**)&pBests, size, cudaHostAllocMapped);
-	cudaHostAlloc((void**)&gBest, sizeof(int) * cluster_size * DATA_DIM, cudaHostAllocMapped);
-	cudaHostAlloc((void**)&pBestAssign, assign_size, cudaHostAllocMapped);
+	cudaHostAlloc((void**)&pBests, size, cudaHostAllocDefault);
+	cudaHostAlloc((void**)&gBest, sizeof(int) * cluster_size * DATA_DIM, cudaHostAllocDefault);
+	cudaHostAlloc((void**)&pBestAssign, assign_size, cudaHostAllocDefault);
 
 	// Initialize assignment matrix to cluster 0
 	for(int i = 0; i < particle_size * data_size; i++)
@@ -173,6 +170,8 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 			gBestAssign[i] = 0;
 	}
 
+	cout << "a" << endl;
+
 	initialize(positions, velocities, pBests, gBest, datas, data_size, particle_size, cluster_size);
 
 	// Initialize device memory
@@ -180,43 +179,59 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 	short *devPosAssign, *devPBestAssign;
 	int *devDatas;
 
-	// Allocate device memory
 	cudaMalloc((void**)&devPositions, size);
-	cudaMalloc((void**)&devVelocities, size);	
+	cudaMalloc((void**)&devVelocities, size);
+	cudaMalloc((void**)&devPBests, size);
+	cudaMalloc((void**)&devGBest, sizeof(int) * cluster_size * DATA_DIM);
 	cudaMalloc((void**)&devPosAssign, assign_size);
+	cudaMalloc((void**)&devPBestAssign, assign_size);
 	cudaMalloc((void**)&devDatas, sizeof(int) * data_size * DATA_DIM);
 
 	// Copy data from host to device
 	cudaMemcpy(devPositions, positions, size, cudaMemcpyHostToDevice);
 	cudaMemcpy(devVelocities, velocities, size, cudaMemcpyHostToDevice);
+	cudaMemcpy(devPBests, pBests, size, cudaMemcpyHostToDevice);
+	cudaMemcpy(devGBest, gBest, sizeof(int) * cluster_size * DATA_DIM, cudaMemcpyHostToDevice);
 	cudaMemcpy(devPosAssign, posAssign, assign_size, cudaMemcpyHostToDevice);
+	cudaMemcpy(devPBestAssign, pBestAssign, assign_size, cudaMemcpyHostToDevice);
 	cudaMemcpy(devDatas, flatDatas, sizeof(int) * data_size * DATA_DIM, cudaMemcpyHostToDevice);
-
-	// Copy pointer for zero copy memory
-	cudaHostGetDevicePointer(&devPBests, pBests, 0);
-	cudaHostGetDevicePointer(&devGBest, gBest, 0);
-	cudaHostGetDevicePointer(&devPBestAssign, pBestAssign, 0);
 
 	// Threads and blocks number
 	int threads = 32;
 	int blocksPart = (particle_size / threads) + 1;
 	int blocksFull = (particle_size * cluster_size * DATA_DIM / threads) + 1;
 
+	// Create event for asynchronous processing between memcpy and kernel
+	cudaStream_t stream0, stream1;
+
+	cudaStreamCreate(&stream0);
+	cudaStreamCreate(&stream1);
+
+	// Run kernel for the first time to populate memory
+	kernelUpdateParticle<<<blocksFull, threads>>>(devPositions, devVelocities, devPBests, devGBest, 
+		devPosAssign, devDatas, getRandomClamped(), getRandomClamped(), data_size, particle_size, cluster_size);
+
+	kernelUpdatePBest<<<blocksPart, threads>>>(devPositions, devPBests, devPosAssign, devPBestAssign, 
+		devDatas, data_size, particle_size, cluster_size);
+
 	// Iteration
 	for (int iter = 0; iter < max_iter; iter++)
-	{		
+	{
 		float rp = getRandomClamped();
 		float rg = getRandomClamped();
 
-		// Run kernel to update particles
-		kernelUpdateParticle<<<blocksFull, threads>>>(devPositions, devVelocities, devPBests, devGBest, 
-				devPosAssign, devDatas, rp, rg, data_size, particle_size, cluster_size);
+		// Copy result of last iteration to host memory, async using stream-0
+		cudaMemcpyAsync(pBests, devPBests, size, cudaMemcpyDeviceToHost, stream0);
+		cudaMemcpyAsync(pBestAssign, devPBestAssign, assign_size, cudaMemcpyDeviceToHost, stream0);
+		
+		// Run kernel, async using stream-1
+		kernelUpdateParticle<<<blocksFull, threads, 0, stream1>>>(devPositions, devVelocities, devPBests, 
+			devGBest, devPosAssign, devDatas, rp, rg, data_size, particle_size, cluster_size);
 
-		// Run kernel to update pBests
-		kernelUpdatePBest<<<blocksPart, threads>>>(devPositions, devPBests, devPosAssign, devPBestAssign, 
-			devDatas, data_size, particle_size, cluster_size);
+		kernelUpdatePBest<<<blocksPart, threads, 0, stream1>>>(devPositions, devPBests, devPosAssign, 
+			devPBestAssign, devDatas, data_size, particle_size, cluster_size);
 
-		// Compute gBest on host
+		// Calculate gBest async between GPU and CPU
 		for(int i = 0; i < particle_size; i++)
 		{
 			// Get slice of array
@@ -237,7 +252,16 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 					gBestAssign[k] = pBestAssign[offsetAssign + k];
 			}
 		}
+
+		// Copy gBest data back to GPU
+		cudaMemcpyAsync(devGBest, gBest, sizeof(int) * cluster_size * DATA_DIM, cudaMemcpyHostToDevice, stream0);
 	}
+
+	cudaStreamSynchronize(stream0);
+	cudaStreamSynchronize(stream1);
+
+	// Copy gBest from device to host
+	cudaMemcpy(gBest, devGBest, sizeof(int) * cluster_size * DATA_DIM, cudaMemcpyDeviceToHost);
 
 	// Cleanup
 	delete[] positions;
@@ -246,14 +270,18 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 
 	cudaFree(devPositions);
 	cudaFree(devVelocities);
+	cudaFree(devDatas);	
 	cudaFree(devPosAssign);
-	cudaFree(devDatas);
+	cudaFree(devPBests);
+	cudaFree(devGBest);
+	cudaFree(devPBestAssign);
 
-	cudaFreeHost(devPBestAssign);
-	cudaFreeHost(devPBests);
-	cudaFreeHost(devGBest);
+	cudaFreeHost(pBests);
+	cudaFreeHost(pBestAssign);
 
-	// Return gBest
+	cudaStreamDestroy(stream0);
+	cudaStreamDestroy(stream1);
+
 	GBest gBestReturn;
 	gBestReturn.gBestAssign = gBestAssign;
 	gBestReturn.arrCentroids = gBest;
