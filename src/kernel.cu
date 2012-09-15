@@ -186,8 +186,6 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 			gBestAssign[i] = 0;
 	}
 
-	cout << "a" << endl;
-
 	initialize(positions, velocities, pBests, gBest, datas, data_size, 
 			   particle_size, cluster_size);
 
@@ -236,6 +234,8 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 	kernelUpdatePBest<<<blocksPart, threads>>>
 		(devPositions, devPBests, devPosAssign, devPBestAssign, devDatas, 
 		 data_size, particle_size, cluster_size);
+
+	cudaThreadSynchronize();
 
 	// Iteration
 	for (int iter = 0; iter < max_iter; iter++)
