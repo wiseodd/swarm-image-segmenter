@@ -54,7 +54,7 @@ float getDistance(data first, data second)
  * Get error for given centroids
  */
 float fitness(const short *assignMat, const data *datas, const data *centroids, 
-	int data_size, int cluster_size)
+			  int data_size, int cluster_size)
 {
 	double total = 0.0;
 
@@ -77,8 +77,9 @@ float fitness(const short *assignMat, const data *datas, const data *centroids,
 /*
  * Assign pixels to centroids
  */
-void assignDataToCentroid(short *assignMat, const data *datas, const data *centroids, 
-	int data_size, int cluster_size)
+void assignDataToCentroid(short *assignMat, const data *datas, 
+						  const data *centroids, int data_size, 
+						  int cluster_size)
 {
 	for (int i = 0; i < data_size; i++)
 	{
@@ -103,8 +104,8 @@ void assignDataToCentroid(short *assignMat, const data *datas, const data *centr
 /*
  * Initialize necessary variables for PSO
  */
-void initializePSO(particle *particles, GBest& gBest, const data *datas, int data_size, 
-	int particle_size, int cluster_size)
+void initializePSO(particle *particles, GBest& gBest, const data *datas, 
+				   int data_size, int particle_size, int cluster_size)
 {
 	for (int i = 0; i < particle_size; i++)
 	{
@@ -148,7 +149,8 @@ void initializePSO(particle *particles, GBest& gBest, const data *datas, int dat
 /*
  * PSO main function
  */
-GBest hostPsoClustering(data *datas, int data_size, int particle_size, int cluster_size, int max_iter)
+GBest hostPsoClustering(data *datas, int data_size, int particle_size, 
+						int cluster_size, int max_iter)
 {
 	// initialize
 	GBest gBest;
@@ -172,7 +174,8 @@ GBest hostPsoClustering(data *datas, int data_size, int particle_size, int clust
 	for (int i = 0; i < data_size; i++)
 		gBest.gBestAssign[i] = 0;
 
-	initializePSO(particles, gBest, datas, data_size, particle_size, cluster_size);
+	initializePSO(particles, gBest, datas, data_size, particle_size, 
+				  cluster_size);
 
 	// Iteration
 	for (int i = 0; i < max_iter; i++)
@@ -189,36 +192,47 @@ GBest hostPsoClustering(data *datas, int data_size, int particle_size, int clust
 				// foreach data dimension
 				for (int l = 0; l < DATA_DIM; l++)
 				{
-					particles[j].velocity[k].info[l] = round(OMEGA * particles[j].velocity[k].info[l]
-							+ c1 * rp * (particles[j].pBest[k].info[l] - particles[j].position[k].info[l])
-							+ c2 * rg * (gBest.centroids[k].info[l] - particles[j].position[k].info[l]));
+					particles[j].velocity[k].info[l] = 
+						round(OMEGA * particles[j].velocity[k].info[l]
+						+ c1 * rp * (particles[j].pBest[k].info[l] - 
+							particles[j].position[k].info[l])
+						+ c2 * rg * (gBest.centroids[k].info[l] - 
+							particles[j].position[k].info[l]));
 
-					particles[j].position[k].info[l] += particles[j].velocity[k].info[l];
+					particles[j].position[k].info[l] += 
+						particles[j].velocity[k].info[l];
 				}
 			}
 
-			assignDataToCentroid(assignMatrix[j], datas, particles[j].position, data_size, cluster_size);
+			assignDataToCentroid(assignMatrix[j], datas, particles[j].position, 
+								 data_size, cluster_size);
 		}
 
 		for (int j = 0; j < particle_size; j++)
 		{
-			if (fitness(assignMatrix[j], datas, particles[j].position, data_size, cluster_size)
-					< fitness(pBestAssign[j], datas, particles[j].pBest, data_size, cluster_size))
+			if (fitness(assignMatrix[j], datas, particles[j].position, 
+						data_size, cluster_size)
+				< fitness(pBestAssign[j], datas, particles[j].pBest, data_size, 
+						  cluster_size))
 			{
 				for (int k = 0; k < cluster_size; k++)
 					particles[j].pBest[k] = particles[j].position[k];
 
-				//assignDataToCentroid(pBestAssign[j], datas, particles[j].pBest, data_size, cluster_size);
+				// assignDataToCentroid(pBestAssign[j], datas, 
+				// particles[j].pBest, data_size, cluster_size);
 				for(int k = 0; k < data_size; k++)
 					pBestAssign[j][k] = assignMatrix[j][k];
 
-				if (fitness(pBestAssign[j], datas, particles[j].pBest, data_size, cluster_size)
-						< fitness(gBest.gBestAssign, datas, gBest.centroids, data_size, cluster_size))
+				if (fitness(pBestAssign[j], datas, particles[j].pBest, 
+							data_size, cluster_size)
+					< fitness(gBest.gBestAssign, datas, gBest.centroids, 
+							  data_size, cluster_size))
 				{
 					for (int k = 0; k < cluster_size; k++)
 						gBest.centroids[k] = particles[j].pBest[k];
 
-					//assignDataToCentroid(gBest.gBestAssign, datas, gBest.centroids, data_size, cluster_size);
+					// assignDataToCentroid(gBest.gBestAssign, datas, 
+					// gBest.centroids, data_size, cluster_size);
 					for(int k = 0; k < data_size; k++)
 						gBest.gBestAssign[k] = pBestAssign[j][k];
 				}

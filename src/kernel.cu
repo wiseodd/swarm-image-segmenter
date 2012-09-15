@@ -22,7 +22,8 @@ float devGetDistance(int *first, int *second)
  * Get error for given centroids
  */
 __host__ __device__ 
-float devFitness(short* assignMat, int* datas, int* centroids, int data_size, int cluster_size)
+float devFitness(short* assignMat, int* datas, int* centroids, int data_size, 
+				 int cluster_size)
 {
 	float total = 0.0f;
 
@@ -33,7 +34,8 @@ float devFitness(short* assignMat, int* datas, int* centroids, int data_size, in
 		for (int j = 0; j < data_size; j++)
 		{
 			if (assignMat[j] == i)
-				subtotal += devGetDistance(&datas[j * DATA_DIM], &centroids[i * DATA_DIM]);
+				subtotal += devGetDistance(&datas[j * DATA_DIM], 
+										   &centroids[i * DATA_DIM]);
 		}
 
 		total += subtotal / data_size;
@@ -46,7 +48,8 @@ float devFitness(short* assignMat, int* datas, int* centroids, int data_size, in
  * Assign pixels to centroids
  */
 __host__ __device__ 
-void devAssignDataToCentroid(short *assignMat, int *datas, int *centroids, int data_size, int cluster_size)
+void devAssignDataToCentroid(short *assignMat, int *datas, int *centroids, 
+							 int data_size, int cluster_size)
 {
 	for (int i = 0; i < data_size; i++)
 	{
@@ -55,7 +58,8 @@ void devAssignDataToCentroid(short *assignMat, int *datas, int *centroids, int d
 
 		for (int j = 0; j < cluster_size; j++)
 		{
-			float nearestDist = devGetDistance(&datas[i * DATA_DIM], &centroids[j * DATA_DIM]);
+			float nearestDist = devGetDistance(&datas[i * DATA_DIM], 
+											   &centroids[j * DATA_DIM]);
 
 			if (nearestDist < nearestCentroidDist)
 			{
@@ -71,8 +75,9 @@ void devAssignDataToCentroid(short *assignMat, int *datas, int *centroids, int d
 /*
  * Initialize necessary variables for PSO
  */
-void initialize(int *positions, int *velocities, int *pBests, int *gBest, const data* datas, int data_size,
-	int particle_size, int cluster_size)
+void initialize(int *positions, int *velocities, int *pBests, int *gBest, 
+				const data* datas, int data_size, int particle_size, 
+				int cluster_size)
 {
 	for (int i = 0; i < particle_size * cluster_size * DATA_DIM; i+= DATA_DIM)
 	{
@@ -93,8 +98,11 @@ void initialize(int *positions, int *velocities, int *pBests, int *gBest, const 
 /*
  * Kernel to update particle
  */
-__global__ void kernelUpdateParticle(int *positions, int *velocities, int *pBests, int *gBest, 
-	short *posAssign, int* datas, float rp, float rg, int data_size, int particle_size, int cluster_size)
+__global__ void kernelUpdateParticle(int *positions, int *velocities, 
+									 int *pBests, int *gBest, short *posAssign, 
+									 int* datas, float rp, float rg, 
+									 int data_size, int particle_size, 
+									 int cluster_size)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -102,8 +110,10 @@ __global__ void kernelUpdateParticle(int *positions, int *velocities, int *pBest
 		return;
 
 	// Update particle velocity and position
-	velocities[i] = (int)lroundf(OMEGA * velocities[i] + c1 * rp * (pBests[i] - positions[i])
-			+ c2 * rg * (gBest[i % (cluster_size * DATA_DIM)] - positions[i]));
+	velocities[i] = (int)lroundf(OMEGA * velocities[i] 
+					+ c1 * rp * (pBests[i] - positions[i])
+					+ c2 * rg * 
+						(gBest[i % (cluster_size * DATA_DIM)] - positions[i]));
 
 	positions[i] += velocities[i];
 }
@@ -111,8 +121,9 @@ __global__ void kernelUpdateParticle(int *positions, int *velocities, int *pBest
 /*
  * Kernel to update particle
  */
-__global__ void kernelUpdatePBest(int *positions, int *pBests, short *posAssign, short *pBestAssign, 
-	int* datas, int data_size, int particle_size, int cluster_size)
+__global__ void kernelUpdatePBest(int *positions, int *pBests, short *posAssign, 
+								  short *pBestAssign, int* datas, int data_size, 
+								  int particle_size, int cluster_size)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int offsetParticle = i * cluster_size * DATA_DIM;
@@ -121,11 +132,14 @@ __global__ void kernelUpdatePBest(int *positions, int *pBests, short *posAssign,
 	if(i >= particle_size)
 		return;
 
-	devAssignDataToCentroid(&posAssign[offsetAssign], datas, &positions[offsetParticle], data_size, cluster_size);
+	devAssignDataToCentroid(&posAssign[offsetAssign], datas, 
+							&positions[offsetParticle], data_size, cluster_size);
 
 	// Update pBest
-	if (devFitness(&posAssign[offsetAssign], datas, &positions[offsetParticle], data_size, cluster_size)
-			< devFitness(&pBestAssign[offsetAssign], datas, &pBests[offsetParticle], data_size, cluster_size))
+	if (devFitness(&posAssign[offsetAssign], datas, &positions[offsetParticle], 
+				   data_size, cluster_size)
+		< devFitness(&pBestAssign[offsetAssign], datas, &pBests[offsetParticle], 
+					 data_size, cluster_size))
 	{
 		// Update pBest position
 		for (int k = 0; k < cluster_size * DATA_DIM; k++)
@@ -140,8 +154,9 @@ __global__ void kernelUpdatePBest(int *positions, int *pBests, short *posAssign,
 /*
  * Wrapper to initialize and running PSO on device
  */
-extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size, int particle_size, 
-	int cluster_size, int max_iter)
+extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size, 
+									 int particle_size, int cluster_size, 
+									 int max_iter)
 {
 	// Initialize host memory
 	int *positions = new int[particle_size * cluster_size * DATA_DIM];
@@ -162,7 +177,8 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 			gBestAssign[i] = 0;
 	}
 
-	initialize(positions, velocities, pBests, gBest, datas, data_size, particle_size, cluster_size);
+	initialize(positions, velocities, pBests, gBest, datas, data_size, 
+			   particle_size, cluster_size);
 
 	// Initialize device memory
 	int *devPositions, *devVelocities, *devPBests, *devGBest;
@@ -184,10 +200,12 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 	cudaMemcpy(devPositions, positions, size, cudaMemcpyHostToDevice);
 	cudaMemcpy(devVelocities, velocities, size, cudaMemcpyHostToDevice);
 	cudaMemcpy(devPBests, pBests, size, cudaMemcpyHostToDevice);
-	cudaMemcpy(devGBest, gBest, sizeof(int) * cluster_size * DATA_DIM, cudaMemcpyHostToDevice);
+	cudaMemcpy(devGBest, gBest, sizeof(int) * cluster_size * DATA_DIM, 
+			   cudaMemcpyHostToDevice);
 	cudaMemcpy(devPosAssign, posAssign, assign_size, cudaMemcpyHostToDevice);
 	cudaMemcpy(devPBestAssign, pBestAssign, assign_size, cudaMemcpyHostToDevice);
-	cudaMemcpy(devDatas, flatDatas, sizeof(int) * data_size * DATA_DIM, cudaMemcpyHostToDevice);
+	cudaMemcpy(devDatas, flatDatas, sizeof(int) * data_size * DATA_DIM, 
+			   cudaMemcpyHostToDevice);
 
 	// Threads and blocks number
 	int threads = 32;
@@ -202,15 +220,18 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 		float rp = getRandomClamped();
 		float rg = getRandomClamped();
 
-		kernelUpdateParticle<<<blocksFull, threads>>>(devPositions, devVelocities, devPBests, devGBest, 
-				devPosAssign, devDatas, rp, rg, data_size, particle_size, cluster_size);
+		kernelUpdateParticle<<<blocksFull, threads>>>
+			(devPositions, devVelocities, devPBests, devGBest, devPosAssign, 
+			 devDatas, rp, rg, data_size, particle_size, cluster_size);
 
-		kernelUpdatePBest<<<blocksPart, threads>>>(devPositions, devPBests, devPosAssign, devPBestAssign, 
-			devDatas, data_size, particle_size, cluster_size);
+		kernelUpdatePBest<<<blocksPart, threads>>>
+			(devPositions, devPBests, devPosAssign, devPBestAssign, devDatas, 
+			 data_size, particle_size, cluster_size);
 
 		// Compute gBest on host
 		cudaMemcpy(pBests, devPBests, size, cudaMemcpyDeviceToHost);
-		cudaMemcpy(pBestAssign, devPBestAssign, assign_size, cudaMemcpyDeviceToHost);
+		cudaMemcpy(pBestAssign, devPBestAssign, assign_size, 
+				   cudaMemcpyDeviceToHost);
 
 		for(int i = 0; i < particle_size; i++)
 		{
@@ -219,9 +240,10 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 			int offsetAssign = i * data_size;
 
 			// Compare pBest and gBest
-			if (devFitness(&pBestAssign[offsetAssign], flatDatas, &pBests[offsetParticle], 
-					data_size, cluster_size)
-						< devFitness(gBestAssign, flatDatas, gBest, data_size, cluster_size))
+			if (devFitness(&pBestAssign[offsetAssign], flatDatas, 
+						   &pBests[offsetParticle], data_size, cluster_size)
+				< devFitness(gBestAssign, flatDatas, gBest, data_size, 
+							 cluster_size))
 			{
 				// Update gBest position
 				for (int k = 0; k < cluster_size * DATA_DIM; k++)
@@ -233,11 +255,13 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 			}
 		}
 
-		cudaMemcpy(devGBest, gBest, sizeof(int) * cluster_size * DATA_DIM, cudaMemcpyHostToDevice);
+		cudaMemcpy(devGBest, gBest, sizeof(int) * cluster_size * DATA_DIM, 
+				   cudaMemcpyHostToDevice);
 	}
 
 	// Copy gBest from device to host
-	cudaMemcpy(gBest, devGBest, sizeof(int) * cluster_size * DATA_DIM, cudaMemcpyDeviceToHost);
+	cudaMemcpy(gBest, devGBest, sizeof(int) * cluster_size * DATA_DIM, 
+			   cudaMemcpyDeviceToHost);
 
 	// Cleanup
 	delete[] positions;
