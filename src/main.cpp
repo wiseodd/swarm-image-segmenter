@@ -21,30 +21,21 @@ int main(int argc, char** argv)
 
     char *arrImage = new char[width * height * channel];
     int *flatDatas = new int[width * height * channel];
-    data *datas = new data[width * height];
+    Data *datas = new Data[width * height];
 
     // Load image to array
     for (int i = 0; i < width * height; i++)
     {
-        arrImage[i * channel + 0] = 
-            (unsigned char) inputImage->imageData[i * channel + 0];
-        arrImage[i * channel + 1] = 
-            (unsigned char) inputImage->imageData[i * channel + 1];
-        arrImage[i * channel + 2] = 
-            (unsigned char) inputImage->imageData[i * channel + 2];
+        Data d;
 
-        flatDatas[i * channel + 0] = 
-            (unsigned char) inputImage->imageData[i * channel + 0];
-        flatDatas[i * channel + 1] = 
-            (unsigned char) inputImage->imageData[i * channel + 1];
-        flatDatas[i * channel + 2] = 
-            (unsigned char) inputImage->imageData[i * channel + 2];
-
-        data d;
-
-        d.info[0] = (unsigned char) inputImage->imageData[i * channel + 0];
-        d.info[1] = (unsigned char) inputImage->imageData[i * channel + 1];
-        d.info[2] = (unsigned char) inputImage->imageData[i * channel + 2];
+        for(int j = 0; j < channel; j++)
+        {
+            arrImage[i * channel + j] = 
+                (unsigned char) inputImage->imageData[i * channel + j];
+            flatDatas[i * channel + j] = 
+                (unsigned char) inputImage->imageData[i * channel + j];
+            d.info[j] = (unsigned char) inputImage->imageData[i * channel + j];
+        }
 
         datas[i] = d;
     }
@@ -75,10 +66,10 @@ int main(int argc, char** argv)
 
     // Check if use host code or device code
     if(comp == 'C')
-        gBest = hostPsoClustering(datas, width * height, particle_num, 
+        gBest = hostPsoClustering(datas, width * height, channel, particle_num, 
                                   cluster_num, max_iter);
     else
-        gBest = devicePsoClustering(datas, flatDatas, width * height, 
+        gBest = devicePsoClustering(datas, flatDatas, width * height, channel, 
                                     particle_num, cluster_num, max_iter);
 
     clock_t end = clock();
@@ -87,20 +78,7 @@ int main(int argc, char** argv)
          << endl;
 
     // Compute quantization error of clusters, less is better
-    if(comp == 'C')
-    {
-        cout << "Quantization Error : " 
-             << fitness(gBest.gBestAssign, datas, gBest.centroids, 
-                        width * height, cluster_num) 
-             << endl;
-    }
-    else
-    {
-        cout << "Quantization Error : " 
-             << devFitness(gBest.gBestAssign, flatDatas, gBest.arrCentroids, 
-                           width * height, cluster_num) 
-             << endl;       
-    }
+    cout << "Error : " << gBest.quantError << endl;
 
     // List for cluster color
     unsigned char colorList[9][3] = { { 0, 0, 255 }, { 255, 0, 0 }, 
@@ -109,6 +87,9 @@ int main(int argc, char** argv)
                                       { 128, 128, 128 }, { 128, 0, 0 }, 
                                       { 255, 128, 0 } };
 
+    channel = 3;
+    char *res_image = new char[width * height * channel]; 
+
     // Coloring clusters
     for (int i = 0; i < width * height; i++)
     {
@@ -116,9 +97,9 @@ int main(int argc, char** argv)
         {
             if (gBest.gBestAssign[i] == j)
             {
-                arrImage[i * channel + 0] = colorList[j][0];
-                arrImage[i * channel + 1] = colorList[j][1];
-                arrImage[i * channel + 2] = colorList[j][2];
+                res_image[i * channel + 0] = colorList[j][0];
+                res_image[i * channel + 1] = colorList[j][1];
+                res_image[i * channel + 2] = colorList[j][2];
             }
         }
     }
@@ -133,7 +114,7 @@ int main(int argc, char** argv)
     // Write array to image
     IplImage* outImage = cvCreateImage(cvSize(width, height), inputImage->depth, 
                                        channel);
-    outImage->imageData = arrImage;
+    outImage->imageData = res_image;
 
     cvSaveImage("out1.jpg", outImage);
 
@@ -145,6 +126,7 @@ int main(int argc, char** argv)
     cvReleaseImage(&inputImage);
     cvReleaseImage(&outImage);
 
+    delete[] res_image;
     delete[] arrImage;
 
     return 0;
