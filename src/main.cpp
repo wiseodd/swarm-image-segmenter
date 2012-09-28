@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 {
     srand(time(NULL));
     IplImage* inputImage = NULL;
-    inputImage = cvLoadImage("/home/adi/Pictures/DSC00156.resized.resized.jpg", 
+    inputImage = cvLoadImage("/home/adi/Pictures/DSC00156.resized.jpg", 
                              -1);
 
     int width = inputImage->width;

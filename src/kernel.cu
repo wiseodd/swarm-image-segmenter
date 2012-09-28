@@ -214,9 +214,7 @@ extern "C" GBest devicePsoClustering(data *datas, int *flatDatas, int data_size,
 
     // Iteration
     for (int iter = 0; iter < max_iter; iter++)
-    {
-        cout << "Iteration-" << iter + 1 << endl;
-        
+    {        
         float rp = getRandomClamped();
         float rg = getRandomClamped();
 
