@@ -1,4 +1,5 @@
 #include <math_functions.h>
+#include <thrust/extrema.h>
 #include "pso_cluster.h"
 
 /*
